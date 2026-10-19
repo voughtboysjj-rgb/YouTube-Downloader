@@ -34,29 +34,64 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install yt-dlp and ffmpeg
+      - name: Setup Anti-Bot PO-Token Server & Cloudflare WARP + yt-dlp
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
-          python3 -m pip install -U yt-dlp
+          sudo apt-get install -y -qq ffmpeg curl gpg
+
+          # راه‌اندازی سرور تولید توکن ضدربات یوتیوب (PO Token Provider)
+          docker run -d --rm -p 4416:4416 --name bgutil-pot brainicism/bgutil-ytdlp-pot-provider || true
+
+          # نصب و راه‌اندازی Cloudflare WARP برای عبور از محدودیت IP دیتاسنتر گیت‌هاب
+          curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+          sudo apt-get update -qq && sudo apt-get install -y -qq cloudflare-warp || true
+          if command -v warp-cli >/dev/null 2>&1; then
+             warp-cli --accept-tos registration new || warp-cli --accept-tos register || true
+            warp-cli --accept-tos mode proxy || warp-cli --accept-tos set-mode proxy || true
+            warp-cli --accept-tos proxy port 40000 || warp-cli --accept-tos set-proxy-port 40000 || true
+            warp-cli --accept-tos connect || true
+            sleep 3
+          fi
+
+          # نصب آخرین نسخه yt-dlp و پلاگین ضدربات
+          python3 -m pip install --user -U "yt-dlp[default,curl-cffi]" bgutil-ytdlp-pot-provider
 
       - name: Download from YouTube
         env:
           YT_URL: ${{ inputs.youtube_url }}
           QUALITY: ${{ inputs.quality }}
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           mkdir -p output
+
           if [ "$QUALITY" = "mp3_320k" ]; then
-            yt-dlp --no-playlist -x --audio-format mp3 --audio-quality 0 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+            FMT_ARGS=(-x --audio-format mp3 --audio-quality 0)
           elif [ "$QUALITY" = "m4a_audio" ]; then
-            yt-dlp --no-playlist -x --audio-format m4a --audio-quality 0 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+            FMT_ARGS=(-x --audio-format m4a --audio-quality 0)
           elif [ "$QUALITY" = "1080p_mp4" ]; then
-            yt-dlp --no-playlist -f "bestvideo[height<=1080]+bestaudio/best[height<=1080]/best" --merge-output-format mp4 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+            FMT_ARGS=(-f "bestvideo[height<=1080]+bestaudio/best[height<=1080]/best" --merge-output-format mp4)
           elif [ "$QUALITY" = "480p_mp4" ]; then
-            yt-dlp --no-playlist -f "bestvideo[height<=480]+bestaudio/best[height<=480]/best" --merge-output-format mp4 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+            FMT_ARGS=(-f "bestvideo[height<=480]+bestaudio/best[height<=480]/best" --merge-output-format mp4)
           else
-            yt-dlp --no-playlist -f "bestvideo[height<=720]+bestaudio/best[height<=720]/best" --merge-output-format mp4 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+            FMT_ARGS=(-f "bestvideo[height<=720]+bestaudio/best[height<=720]/best" --merge-output-format mp4)
           fi
+
+          COMMON_ARGS=(
+            --no-playlist
+            --js-runtimes node
+            --retries 15
+            --fragment-retries 15
+            -o "output/%(id)s.%(ext)s"
+          )
+
+          echo "⏳ تلاش ۱: دانلود از طریق تونل Cloudflare WARP + PO-Token..."
+          yt-dlp --proxy "socks5://127.0.0.1:40000" "${COMMON_ARGS[@]}" "${FMT_ARGS[@]}" -- "$YT_URL" || {
+            echo "⏳ تلاش ۲: دانلود مستقیم با PO-Token و کلاینت‌های جایگزین..."
+            rm -rf output/*
+            yt-dlp "${COMMON_ARGS[@]}" "${FMT_ARGS[@]}" -- "$YT_URL"
+          }
+
           ls -lh output/
 
       - name: Upload as GitHub Action Artifact
