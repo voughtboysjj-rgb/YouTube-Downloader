@@ -1,9 +1,25 @@
-# 🎬 YouTube Downloader Pro (نسخه ۲.۰)
+# 🎬 YouTube Downloader Pro (نسخه موبایل، وب و دسکتاپ)
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)
 ![PyQt6](https://img.shields.io/badge/GUI-PyQt6-41CD52?logo=qt&logoColor=white)
 ![yt-dlp](https://img.shields.io/badge/Core-yt--dlp-red?logo=youtube&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
+
+---
+
+## 📱 استفاده مستقیم با گوشی موبایل در گیت‌هاب (بدون نصب برنامه!)
+
+اگر با **گوشی موبایل** وارد این صفحه شده‌اید، نیازی به کامپیوتر ندارید! از دکمه‌های زیر مستقیماً روی گیت‌هاب استفاده کنید:
+
+### ۱. 🌐 وب‌اپلیکیشن آنلاین موبایل (GitHub Pages):
+👉 **[ورود به صفحه دانلودر آنلاین موبایل (کلیک کنید)](https://voughtboysjj-rgb.github.io/YouTube-Downloader/)**
+
+### ۲. ⚡ دانلود با سرور ابری گیت‌هاب (GitHub Actions):
+1. روی این لینک بزنید: **[🎬 اجرای دانلودر در سرور گیت‌هاب](https://github.com/voughtboysjj-rgb/YouTube-Downloader/actions/workflows/download.yml)**
+2. دکمه **Run workflow** را بزنید، لینک یوتیوب را وارد کنید و کیفیت (`720p`, `1080p` یا `mp3_320k`) را انتخاب نمایید.
+3. بعد از اتمام، فایل آماده را مستقیماً از اینجا در گوشی ذخیره کنید: **[📥 صفحه دانلود فایل‌های آماده (Releases)](https://github.com/voughtboysjj-rgb/YouTube-Downloader/releases)**
+
+---
 
 یک ابزار گرافیکی مدرن، سریع، امن و راست‌به‌چپ (RTL) برای دانلود ویدیو، پلی‌لیست، زیرنویس و استخراج صدا از یوتیوب که با استفاده از **PyQt6**، **yt-dlp** و **ffmpeg** توسعه یافته است.
 

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YouTube Downloader Pro | نسخه موبایل گیت‌هاب</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --primary: #0284c7;
+            --success: #059669;
+            --purple: #7c3aed;
+            --amber: #d97706;
+            --accent: #38bdf8;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Vazirmatn", "Segoe UI", Tahoma, Arial, sans-serif;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 14px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 580px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px 16px;
+            text-align: center;
+            margin-bottom: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+        }
+        .header h1 {
+            font-size: 1.25rem;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+        .header p {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        .card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+        }
+        .card-title {
+            font-size: 0.98rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+        input[type="text"], select {
+            width: 100%;
+            background-color: var(--bg);
+            color: var(--text);
+            border: 1px solid #475569;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.93rem;
+            outline: none;
+        }
+        input[type="text"]:focus, select:focus {
+            border-color: var(--accent);
+        }
+        .ltr {
+            direction: ltr;
+            text-align: left;
+        }
+        .url-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .url-row input {
+            flex: 1;
+        }
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 0.93rem;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            width: 100%;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-primary { background-color: var(--primary); }
+        .btn-success { background-color: var(--success); }
+        .btn-purple { background-color: var(--purple); }
+        .btn-amber { background-color: var(--amber); }
+        .btn-secondary {
+            background-color: #334155;
+            border: 1px solid #475569;
+            width: auto;
+            white-space: nowrap;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .preview-box {
+            display: none;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+        .preview-box img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .preview-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        .preview-meta {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        .badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+        }
+        .status-msg {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            font-size: 0.86rem;
+            color: #e2e8f0;
+            display: none;
+        }
+        .widget-frame {
+            width: 100%;
+            height: 62px;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+            background: #0f172a;
+        }
+        .steps {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            padding-right: 18px;
+        }
+        .steps li {
+            margin-bottom: 6px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 18px;
+        }
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎬 YouTube Downloader Pro</h1>
+        <p>نسخه وب و موبایل متصل به گیت‌هاب (بدون نیاز به نصب برنامه)</p>
+    </div>
+
+    <!-- کارت ۱: وارد کردن لینک و پیش‌نمایش -->
+    <div class="card">
+        <div class="card-title">
+            <span>۱. لینک ویدیوی یوتیوب</span>
+            <span class="badge">موبایل و وب</span>
+        </div>
+
+        <label>لینک ویدیو یا Shorts یوتیوب را وارد کنید:</label>
+        <div class="url-row">
+            <input type="text" id="urlInput" class="ltr" placeholder="https://youtu.be/... یا https://youtube.com/watch?v=..." oninput="onUrlInput()">
+            <button type="button" class="btn btn-secondary" onclick="pasteClip()">📋 الصاق</button>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="loadVideoPreview()">
+            🔍 بارگیری اطلاعات، پیش‌نمایش و دکمه‌های دانلود
+        </button>
+
+        <!-- باکس پیش‌نمایش ویدیو -->
+        <div id="previewBox" class="preview-box">
+            <img id="thumbImg" src="" alt="Thumbnail">
+            <div id="videoTitle" class="preview-title"></div>
+            <div id="videoAuthor" class="preview-meta"></div>
+
+            <div class="grid-2">
+                <a id="thumbDlBtn" href="#" target="_blank" download class="btn btn-secondary" style="width:100%; font-size:0.82rem;">
+                    🖼️ دانلود کاور باکیفیت (HD)
+                </a>
+                <a id="watchEmbedBtn" href="#" target="_blank" class="btn btn-secondary" style="width:100%; font-size:0.82rem;">
+                    ▶️ پخش بدون تبلیغ
+                </a>
+            </div>
+        </div>
+
+        <div id="statusBox" class="status-msg"></div>
+    </div>
+
+    <!-- کارت ۲: دانلود مستقیم در مرورگر گوشی -->
+    <div class="card" id="directDlCard">
+        <div class="card-title">
+            <span>۲. دانلود مستقیم ویدیو و MP3 در گوشی</span>
+            <span class="badge">سریع</span>
+        </div>
+
+        <label>انتخاب فرمت مورد نظر:</label>
+        <select id="formatSelect" onchange="updateDirectWidget()">
+            <option value="mp3">🎵 فایل صوتی MP3 (کیفیت بالا 320kbps)</option>
+            <option value="720">🎬 ویدیو با کیفیت 720p HD (MP4)</option>
+            <option value="1080">🎬 ویدیو با کیفیت 1080p Full HD (MP4)</option>
+            <option value="480">🎬 ویدیو با کیفیت 480p (کم‌حجم - MP4)</option>
+            <option value="360">🎬 ویدیو با کیفیت 360p (بسیار کم‌حجم)</option>
+        </select>
+
+        <div id="widgetContainer" style="margin-top: 12px; display: none;">
+            <p style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 6px;">
+                👇 روی دکمه زیر بزنید تا فایل مستقیماً در حافظه گوشی شما ذخیره شود:
+            </p>
+            <iframe id="dlWidgetFrame" class="widget-frame" scrolling="no" allowTransparency="true"></iframe>
+        </div>
+
+        <div class="grid-2" style="margin-top: 12px;">
+            <button type="button" class="btn btn-success" onclick="openDirectEngine('video')">
+                ▼ سرور مستقیم ویدیو (MP4)
+            </button>
+            <button type="button" class="btn btn-purple" onclick="openDirectEngine('audio')">
+                ♪ سرور مستقیم صدا (MP3)
+            </button>
+        </div>
+    </div>
+
+    <!-- کارت ۳: دانلود ابری با سرور گیت‌هاب (GitHub Actions) -->
+    <div class="card">
+        <div class="card-title">
+            <span>۳. دانلود ابری با موتور yt-dlp گیت‌هاب</span>
+            <span class="badge">بدون محدودیت</span>
+        </div>
+        <p style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 10px;">
+            با این قابلیت، سرورهای قدرتمند گیت‌هاب ویدیو یا پلی‌لیست شما را با <strong>yt-dlp و ffmpeg</strong> دانلود کرده و فایل آماده را در بخش <strong>Releases / Actions</strong> مخزن خودتان قرار می‌دهند تا با اینترنت گوشی دانلود کنید:
+        </p>
+        <ol class="steps">
+            <li>روی دکمه نارنجی زیر کلیک کنید تا صفحه اجرای ابری گیت‌هاب باز شود.</li>
+            <li>روی <strong>Run workflow</strong> بزنید و لینک یوتیوب را در آن قرار دهید.</li>
+            <li>در کمتر از ۱ دقیقه فایل MP4 یا MP3 در بخش <strong>Releases</strong> مخزن آماده دانلود به گوشی است!</li>
+        </ol>
+        <div class="grid-2" style="margin-top: 12px;">
+            <a href="https://github.com/voughtboysjj-rgb/YouTube-Downloader/actions/workflows/download.yml" target="_blank" class="btn btn-amber">
+                ⚡ اجرای دانلودر در سرور گیت‌هاب
+            </a>
+            <a href="https://github.com/voughtboysjj-rgb/YouTube-Downloader/releases" target="_blank" class="btn btn-primary">
+                📥 مشاهده فایل‌های دانلودشده
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        توسعه‌یافته در مخزن <a href="https://github.com/voughtboysjj-rgb/YouTube-Downloader" target="_blank">voughtboysjj-rgb/YouTube-Downloader</a>
+    </div>
+</div>
+
+<script>
+function extractVideoId(url) {
+    if (!url) return null;
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/|youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/,
+        /^([a-zA-Z0-9_-]{11})$/
+    ];
+    for (const p of patterns) {
+        const m = url.trim().match(p);
+        if (m && m[1]) return m[1];
+    }
+    return null;
+}
+
+async function pasteClip() {
+    try {
+        const t = await navigator.clipboard.readText();
+        if (t) {
+            document.getElementById('urlInput').value = t.trim();
+            loadVideoPreview();
+        }
+    } catch (e) {
+        alert('لطفاً لینک را نگه داشته و Paste را بزنید.');
+    }
+}
+
+function onUrlInput() {
+    const val = document.getElementById('urlInput').value.trim();
+    if (extractVideoId(val)) {
+        loadVideoPreview();
+    }
+}
+
+async function loadVideoPreview() {
+    const rawUrl = document.getElementById('urlInput').value.trim();
+    const vid = extractVideoId(rawUrl);
+    const statusBox = document.getElementById('statusBox');
+
+    if (!vid) {
+        statusBox.style.display = 'block';
+        statusBox.textContent = '⚠ لطفاً یک لینک معتبر یوتیوب وارد کنید.';
+        return;
+    }
+
+    const cleanUrl = `https://www.youtube.com/watch?v=${vid}`;
+    const maxThumb = `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`;
+    const hqThumb = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+
+    const thumbImg = document.getElementById('thumbImg');
+    thumbImg.src = maxThumb;
+    thumbImg.onerror = () => { thumbImg.src = hqThumb; };
+
+    document.getElementById('thumbDlBtn').href = maxThumb;
+    document.getElementById('watchEmbedBtn').href = `https://www.youtube-nocookie.com/embed/${vid}?autoplay=1`;
+    document.getElementById('videoTitle').textContent = 'در حال دریافت عنوان ویدیو...';
+    document.getElementById('videoAuthor').textContent = `شناسه ویدیو: ${vid}`;
+    document.getElementById('previewBox').style.display = 'block';
+    statusBox.style.display = 'none';
+
+    updateDirectWidget();
+
+    try {
+        const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(cleanUrl)}`);
+        const data = await res.json();
+        if (data && data.title) {
+            document.getElementById('videoTitle').textContent = `📌 ${data.title}`;
+            document.getElementById('videoAuthor').textContent = `👤 کانال: ${data.author_name || 'نامشخص'} | شناسه: ${vid}`;
+        } else {
+            document.getElementById('videoTitle').textContent = `ویدیوی یوتیوب (${vid})`;
+        }
+    } catch (e) {
+        document.getElementById('videoTitle').textContent = `ویدیوی یوتیوب (${vid})`;
+    }
+}
+
+function updateDirectWidget() {
+    const rawUrl = document.getElementById('urlInput').value.trim();
+    const vid = extractVideoId(rawUrl);
+    if (!vid) return;
+
+    const fmt = document.getElementById('formatSelect').value;
+    const cleanUrl = `https://www.youtube.com/watch?v=${vid}`;
+    const frame = document.getElementById('dlWidgetFrame');
+    const container = document.getElementById('widgetContainer');
+
+    frame.src = `https://loader.to/api/button/?url=${encodeURIComponent(cleanUrl)}&f=${encodeURIComponent(fmt)}&color=059669`;
+    container.style.display = 'block';
+}
+
+function openDirectEngine(mode) {
+    const rawUrl = document.getElementById('urlInput').value.trim();
+    const vid = extractVideoId(rawUrl);
+    if (!vid) {
+        alert('لطفاً ابتدا لینک ویدیوی یوتیوب را در کادر بالا وارد کنید.');
+        return;
+    }
+    document.getElementById('formatSelect').value = (mode === 'audio') ? 'mp3' : '720';
+    loadVideoPreview();
+    document.getElementById('widgetContainer').scrollIntoView({behavior: 'smooth'});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+name: "🎬 دانلود ویدیو و MP3 با موبایل (YouTube Cloud Downloader)"
+
+on:
+  workflow_dispatch:
+    inputs:
+      youtube_url:
+        description: "لینک ویدیوی یوتیوب را اینجا وارد کنید:"
+        required: true
+        type: string
+      quality:
+        description: "کیفیت یا فرمت مورد نظر را انتخاب کنید:"
+        required: true
+        type: choice
+        default: "720p_mp4"
+        options:
+          - "720p_mp4"
+          - "1080p_mp4"
+          - "480p_mp4"
+          - "mp3_320k"
+          - "m4a_audio"
+      publish_to_releases:
+        description: "قرار دادن لینک مستقیم دانلود در بخش Releases مخزن (مناسب گوشی)"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  download_media:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yt-dlp and ffmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python3 -m pip install -U yt-dlp
+
+      - name: Download from YouTube
+        env:
+          YT_URL: ${{ inputs.youtube_url }}
+          QUALITY: ${{ inputs.quality }}
+        run: |
+          mkdir -p output
+          if [ "$QUALITY" = "mp3_320k" ]; then
+            yt-dlp --no-playlist -x --audio-format mp3 --audio-quality 0 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+          elif [ "$QUALITY" = "m4a_audio" ]; then
+            yt-dlp --no-playlist -x --audio-format m4a --audio-quality 0 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+          elif [ "$QUALITY" = "1080p_mp4" ]; then
+            yt-dlp --no-playlist -f "bestvideo[height<=1080]+bestaudio/best[height<=1080]/best" --merge-output-format mp4 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+          elif [ "$QUALITY" = "480p_mp4" ]; then
+            yt-dlp --no-playlist -f "bestvideo[height<=480]+bestaudio/best[height<=480]/best" --merge-output-format mp4 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+          else
+            yt-dlp --no-playlist -f "bestvideo[height<=720]+bestaudio/best[height<=720]/best" --merge-output-format mp4 -o "output/%(title).100s.%(ext)s" -- "$YT_URL"
+          fi
+          ls -lh output/
+
+      - name: Upload as GitHub Action Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-downloaded-media
+          path: output/*
+          retention-days: 5
+
+      - name: Publish Direct Download Link to GitHub Releases
+        if: ${{ inputs.publish_to_releases == true }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="cloud-downloads"
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "📥 فایل‌های دانلودشده با موبایل (Cloud Downloads)" --notes "فایل‌های دانلودشده توسط سرور ابری گیت‌هاب در زیر برای دانلود مستقیم با گوشی قرار دارند:"
+          gh release upload "$TAG" output/* --clobber
+          echo "### ✅ فایل شما با موفقیت آماده شد!" >> $GITHUB_STEP_SUMMARY
+          echo "👉 **[کلیک کنید: رفتن به صفحه دانلود مستقیم فایل در گوشی (Releases)](https://github.com/${{ github.repository }}/releases/tag/cloud-downloads)**" >> $GITHUB_STEP_SUMMARY
