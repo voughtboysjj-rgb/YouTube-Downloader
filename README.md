@@ -53,8 +53,24 @@ pip install -r requirements.txt
 
 ## 🚀 نحوه اجرا (How to Run)
 
+### ۱. نسخه دسکتاپ (ویندوز و لینوکس):
 ```bash
 python ud.py
+```
+
+### ۲. نسخه موبایل و تحت وب (اندروید / آیفون / Termux):
+اگر با **گوشی موبایل** کار می‌کنید، نسخه تحت وب (`web_app.py`) به طور ویژه برای صفحه نمایش موبایل طراحی شده است:
+
+#### اجرا در اندروید با برنامه Termux:
+کافی است برنامه **Termux** را روی گوشی نصب کنید و این دستور یک‌خطی را در آن کپی کنید:
+```bash
+pkg update -y && pkg install -y git python ffmpeg && git clone https://github.com/voughtboysjj-rgb/YouTube-Downloader.git && cd YouTube-Downloader && bash termux.sh
+```
+سپس در مرورگر گوشی (Chrome) آدرس `http://127.0.0.1:5000` به صورت خودکار باز می‌شود و می‌توانید ویدیو و MP3 را مستقیماً در حافظه گوشی دانلود کنید!
+
+#### اجرای نسخه وب روی سرور یا کامپیوتر:
+```bash
+python web_app.py
 ```
 
 ---
